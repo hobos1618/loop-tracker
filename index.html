@@ -726,6 +726,117 @@
             to { opacity: 1; transform: translate(-50%, 0); }
         }
 
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 520px;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-header h2 { font-size: 18px; margin: 0; }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            line-height: 1;
+        }
+        .modal-close:hover { color: var(--text-primary); }
+        .modal-body { padding: 20px; }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+        }
+        .form-row { margin-bottom: 16px; }
+        .form-row label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+        .form-row input, .form-row select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-strong);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-row input:focus, .form-row select:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 2px rgba(98,100,167,0.2);
+        }
+        .form-row-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .train-details-section {
+            background: var(--surface-hover);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        .train-details-header {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        .train-details-section .form-row { margin-bottom: 12px; }
+        .train-details-section .form-row:last-child { margin-bottom: 0; }
+        .btn-primary {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .btn-primary:hover { background: var(--brand-hover); }
+        .btn-secondary {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border-strong);
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-secondary:hover { background: var(--border); }
+
         /* Section Headers */
         .section-header {
             display: flex;
@@ -876,6 +987,87 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+    <!-- Add Fix Modal -->
+    <div class="modal-overlay" id="addFixModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Fix</h2>
+                <button class="modal-close" onclick="closeAddFixModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <label>Bug ID *</label>
+                    <input type="text" id="newBugId" placeholder="e.g., 12345">
+                </div>
+                <div class="form-row">
+                    <label>Title *</label>
+                    <input type="text" id="newTitle" placeholder="Brief description">
+                </div>
+                <div class="form-row">
+                    <label>Owner</label>
+                    <input type="text" id="newOwner" placeholder="e.g., John">
+                </div>
+                <div class="form-row-grid">
+                    <div class="form-row">
+                        <label>Priority</label>
+                        <select id="newPriority">
+                            <option value="P1">P1 - Critical</option>
+                            <option value="P2" selected>P2 - High</option>
+                            <option value="P3">P3 - Medium</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Status</label>
+                        <select id="newStatus">
+                            <option value="Pending">Pending</option>
+                            <option value="Targeted">Targeted</option>
+                            <option value="Included">Included</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Target Train *</label>
+                    <select id="newTargetTrain" onchange="populateTrainDetails()"></select>
+                </div>
+                <div class="train-details-section">
+                    <div class="train-details-header">Train Details (auto-populated, editable)</div>
+                    <div class="form-row-grid">
+                        <div class="form-row">
+                            <label>Code Cutoff</label>
+                            <input type="datetime-local" id="newCodeCutoff">
+                        </div>
+                        <div class="form-row">
+                            <label>Snap Date</label>
+                            <input type="datetime-local" id="newSnapDate">
+                        </div>
+                    </div>
+                    <div class="form-row-grid">
+                        <div class="form-row">
+                            <label>Ring 2</label>
+                            <input type="datetime-local" id="newRing2">
+                        </div>
+                        <div class="form-row">
+                            <label>Ring 3</label>
+                            <input type="datetime-local" id="newRing3">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label>General Availability</label>
+                        <input type="datetime-local" id="newGeneral">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Notes</label>
+                    <input type="text" id="newNotes" placeholder="Additional details...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeAddFixModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveFix()">Add Fix</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Hidden file input -->
     <input type="file" id="importInput" accept=".json" style="display:none" onchange="handleImport(event)">
 
@@ -883,7 +1075,6 @@
         // ========== DATA ==========
         let data = {
             trains: [
-                { id: "1", name: "T2-W-Web-25-Nov-A", codeCutoff: "2025-10-31T05:30", snapDate: "2025-11-03T09:00", ring2: "2025-11-03T09:00", ring3: "2025-11-07T09:00", general: "2025-11-17T21:00" },
                 { id: "2", name: "T2-W-Web-26-Jan-C", codeCutoff: "2026-01-16T05:30", snapDate: "2026-01-19T09:00", ring2: "2026-01-19T09:00", ring3: "2026-01-23T09:00", general: "2026-02-04T18:00" },
                 { id: "3", name: "T2-W-Web-26-Jan-D", codeCutoff: "2026-01-23T05:30", snapDate: "2026-01-26T09:00", ring2: "2026-01-26T09:00", ring3: "", general: "" },
                 { id: "4", name: "T2-W-Web-26-Feb-A", codeCutoff: "2026-01-30T05:30", snapDate: "2026-02-02T09:00", ring2: "2026-02-02T09:00", ring3: "2026-02-06T09:00", general: "2026-02-18T18:00" },
@@ -918,14 +1109,14 @@
         }
 
         function loadData() {
-            const saved = localStorage.getItem('loopTrackerData');
+            const saved = localStorage.getItem('fixesTrackerData');
             if (saved) {
                 try { data = JSON.parse(saved); } catch(e) {}
             }
         }
 
         function saveData() {
-            localStorage.setItem('loopTrackerData', JSON.stringify(data));
+            localStorage.setItem('fixesTrackerData', JSON.stringify(data));
             updateStats();
         }
 
@@ -1107,27 +1298,83 @@
         }
 
         function addFix() {
+            // Populate train dropdown
+            const trainSelect = document.getElementById('newTargetTrain');
+            trainSelect.innerHTML = data.trains.map(t =>
+                `<option value="${t.id}" ${(currentTrainId !== 'all' && currentTrainId === t.id) ? 'selected' : ''}>${t.name}</option>`
+            ).join('');
+
+            // Clear form
+            document.getElementById('newBugId').value = '';
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newOwner').value = '';
+            document.getElementById('newPriority').value = 'P2';
+            document.getElementById('newStatus').value = 'Pending';
+            document.getElementById('newNotes').value = '';
+
+            // Populate train details
+            populateTrainDetails();
+
+            // Show modal
+            document.getElementById('addFixModal').classList.add('show');
+            document.getElementById('newBugId').focus();
+        }
+
+        function closeAddFixModal() {
+            document.getElementById('addFixModal').classList.remove('show');
+        }
+
+        function populateTrainDetails() {
+            const trainId = document.getElementById('newTargetTrain').value;
+            const train = data.trains.find(t => t.id === trainId);
+            if (!train) return;
+
+            document.getElementById('newCodeCutoff').value = train.codeCutoff || '';
+            document.getElementById('newSnapDate').value = train.snapDate || '';
+            document.getElementById('newRing2').value = train.ring2 || '';
+            document.getElementById('newRing3').value = train.ring3 || '';
+            document.getElementById('newGeneral').value = train.general || '';
+        }
+
+        function saveFix() {
+            const bugId = document.getElementById('newBugId').value.trim();
+            const title = document.getElementById('newTitle').value.trim();
+            const trainId = document.getElementById('newTargetTrain').value;
+
+            if (!bugId || !title) {
+                showToast('Bug ID and Title are required');
+                return;
+            }
+
+            // Update train details if user edited them
+            const train = data.trains.find(t => t.id === trainId);
+            if (train) {
+                train.codeCutoff = document.getElementById('newCodeCutoff').value;
+                train.snapDate = document.getElementById('newSnapDate').value;
+                train.ring2 = document.getElementById('newRing2').value;
+                train.ring3 = document.getElementById('newRing3').value;
+                train.general = document.getElementById('newGeneral').value;
+            }
+
             const newFix = {
                 id: Date.now().toString(),
-                bugId: '',
-                title: 'New fix',
+                bugId: bugId,
+                title: title,
                 component: '',
-                owner: '',
-                priority: 'P2',
-                targetTrain: currentTrainId === 'all' ? data.trains[0]?.id : currentTrainId,
-                status: 'Pending',
-                notes: ''
+                owner: document.getElementById('newOwner').value.trim(),
+                priority: document.getElementById('newPriority').value,
+                targetTrain: trainId,
+                status: document.getElementById('newStatus').value,
+                notes: document.getElementById('newNotes').value.trim()
             };
+
             data.fixes.unshift(newFix);
             saveData();
             renderFixes();
             renderTrainTabs();
-
-            // Focus the bug ID input
-            setTimeout(() => {
-                const input = document.querySelector(`tr[data-id="${newFix.id}"] .fix-id`)?.closest('td')?.nextElementSibling?.querySelector('input');
-                input?.focus();
-            }, 100);
+            renderTrainInfo();
+            closeAddFixModal();
+            showToast('Fix added');
         }
 
         function deleteFix(fixId) {
@@ -1183,7 +1430,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `loop-tracker-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `fixes-tracker-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
             showToast('Data exported');
