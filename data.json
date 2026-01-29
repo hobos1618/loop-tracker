@@ -64,7 +64,7 @@
       "owner": "John",
       "priority": "P1",
       "targetTrain": "4",
-      "status": "Pending",
+      "status": "Targeted",
       "notes": "Verified in Ring2"
     },
     {
@@ -75,7 +75,7 @@
       "owner": "Sarah",
       "priority": "P1",
       "targetTrain": "4",
-      "status": "Pending",
+      "status": "Included",
       "notes": ""
     },
     {
