@@ -923,6 +923,29 @@
             50% { opacity: 0.4; }
         }
 
+        /* Save button effects */
+        .save-btn {
+            transition: all 0.3s ease;
+        }
+        .save-btn.has-changes {
+            background: var(--brand-primary);
+            color: white;
+            animation: saveGlow 1.5s ease-in-out infinite;
+            box-shadow: 0 0 0 2px rgba(98, 100, 167, 0.3);
+        }
+        .save-btn.has-changes:hover {
+            background: var(--brand-hover);
+            animation: none;
+        }
+        @keyframes saveGlow {
+            0%, 100% { box-shadow: 0 0 0 2px rgba(98, 100, 167, 0.3); }
+            50% { box-shadow: 0 0 0 4px rgba(98, 100, 167, 0.5); }
+        }
+        .save-btn.saving {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
         /* Print */
         @media print {
             .loop-header, .loop-toolbar, .component-actions, .row-actions, .add-row { display: none !important; }
@@ -1012,7 +1035,7 @@
         </button>
         <div class="toolbar-divider"></div>
         <div class="toolbar-divider"></div>
-        <button class="toolbar-btn" onclick="saveToGitHub()" style="color:var(--brand-primary);font-weight:500;">
+        <button class="toolbar-btn save-btn" id="saveBtn" onclick="saveToGitHub()">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2v12h12V4.5L11.5 2H2zm1 1h7v3h3v7H3V3zm8 0l2 2h-2V3zM4 7v1h6V7H4zm0 2v1h6V9H4zm0 2v1h4v-1H4z"/></svg>
             Save
         </button>
@@ -1210,7 +1233,9 @@
             renderTrainInfo();
             renderFixes();
             updateStats();
+            hasUnsavedChanges = false;
             updateSyncStatus('synced', 'Synced');
+            updateSaveButton();
         }
 
         async function loadFromGitHub() {
@@ -1246,7 +1271,18 @@
             localStorage.setItem('fixesTrackerData', JSON.stringify(data));
             hasUnsavedChanges = true;
             updateSyncStatus('unsaved', 'Unsaved changes');
+            updateSaveButton();
             updateStats();
+        }
+
+        function updateSaveButton() {
+            const btn = document.getElementById('saveBtn');
+            if (!btn) return;
+            if (hasUnsavedChanges) {
+                btn.classList.add('has-changes');
+            } else {
+                btn.classList.remove('has-changes');
+            }
         }
 
         async function saveToGitHub() {
@@ -1289,6 +1325,7 @@
                     fileSha = result.content.sha;
                     hasUnsavedChanges = false;
                     updateSyncStatus('synced', 'Saved to repo');
+                    updateSaveButton();
                     showToast('✓ Saved to repo');
                 } else {
                     const error = await response.json();
