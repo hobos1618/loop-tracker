@@ -604,6 +604,11 @@
         /* Inline Dropdown */
         .inline-dropdown {
             position: relative;
+            z-index: 1;
+        }
+
+        .inline-dropdown:has(.dropdown-menu.show) {
+            z-index: 100;
         }
 
         .dropdown-menu {
@@ -613,8 +618,8 @@
             background: white;
             border: 1px solid var(--border);
             border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            z-index: 1000;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 9999;
             min-width: 160px;
             padding: 4px;
             display: none;
@@ -622,6 +627,23 @@
 
         .dropdown-menu.show {
             display: block;
+        }
+
+        /* Ensure table rows don't clip dropdowns */
+        .checklist-table {
+            overflow: visible;
+        }
+
+        .checklist-table tbody {
+            overflow: visible;
+        }
+
+        .checklist-table tr {
+            position: relative;
+        }
+
+        .checklist-table td {
+            overflow: visible;
         }
 
         .dropdown-item {
